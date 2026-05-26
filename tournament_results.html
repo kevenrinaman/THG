@@ -1,0 +1,457 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Tournament Results</title><style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #1a7a3c; --green-light: #e8f5ee; --green-mid: #2d9e54;
+    --red: #c0392b; --red-light: #fdf0ef;
+    --amber: #d4750a; --amber-light: #fef3e2;
+    --dirt: #8B5E3C; --dirt-light: #f5ede4;
+    --gold: #c9a227; --gold-light: #fff8e1;
+    --bg: #f4f1ec; --card: #ffffff;
+    --text: #1a1a1a; --muted: #666; --border: #ddd;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08); --radius: 8px;
+  }
+  body { font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header {
+    background: #111; color: #fff; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  header h1 { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 20px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; }
+  header h1 span { color: #e8c84a; }
+  .header-actions { display: flex; gap: 8px; }
+  .btn {
+    font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: 600;
+    padding: 7px 14px; border-radius: var(--radius); border: 1px solid var(--border);
+    background: var(--card); color: var(--text); cursor: pointer; transition: background 0.15s, transform 0.1s;
+  }
+  .btn:hover { background: #f0f0f0; } .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--green); color: #fff; border-color: var(--green); }
+  .btn-primary:hover { background: #155f2e; }
+  .btn-ghost { background: transparent; border-color: rgba(255,255,255,0.3); color: #fff; font-size: 12px; }
+  .btn-ghost:hover { background: rgba(255,255,255,0.1); }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+  .btn-danger { color: var(--red); border-color: #f5c6c3; }
+  .btn-danger:hover { background: var(--red-light); }
+  .container { max-width: 1100px; margin: 0 auto; padding: 20px 16px; }
+  .div-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .div-tab {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 13px; font-weight: 400;
+    letter-spacing: 0.5px; padding: 5px 14px; border-radius: 20px;
+    border: 1.5px solid var(--border); background: var(--card); color: var(--muted); cursor: pointer; transition: all 0.15s;
+  }
+  .div-tab:hover { border-color: #aaa; color: var(--text); }
+  .div-tab.active { color: #fff; border-color: transparent; }
+  .main-nav { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 2px solid var(--border); overflow-x:auto; }
+  .nav-tab {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 14px; font-weight: 400;
+    letter-spacing: 0.5px; text-transform: uppercase; padding: 10px 20px;
+    border: none; background: transparent; color: var(--muted); cursor: pointer;
+    border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.15s; white-space: nowrap;
+  }
+  .nav-tab:hover { color: var(--text); } .nav-tab.active { color: var(--green); border-bottom-color: var(--green); }
+  .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px; }
+  .search-bar { display: flex; gap: 10px; margin-bottom: 14px; align-items: center; }
+  .search-bar input { flex: 1; max-width: 300px; }
+  input[type=text], input[type=number] {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius);
+    font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: var(--text); background: #fafafa;
+  }
+  input:focus { outline: none; border-color: var(--green); background: #fff; }
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
+  .filter-chip { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--card); color: var(--muted); cursor: pointer; transition: all 0.12s; }
+  .filter-chip:hover { border-color: #aaa; } .filter-chip.active { background: #222; color: #fff; border-color: #222; }
+  .game-list { display: flex; flex-direction: column; gap: 6px; }
+  .game-row { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; display: flex; align-items: center; gap: 10px; transition: box-shadow 0.15s; }
+  .game-row:hover { box-shadow: var(--shadow); }
+  .game-row.is-final { border-left: 3px solid var(--green); }
+  .game-row.is-champ { border-left: 3px solid var(--gold); }
+  .game-time-col { min-width: 92px; text-align: right; }
+  .game-time { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 13px; color: var(--muted); letter-spacing: .3px; }
+  .game-date { font-size: 11px; color: #aaa; }
+  .game-teams { flex: 1; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; }
+  .team-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+  .score { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 18px; font-weight: 400; min-width: 22px; text-align: center; }
+  .score.win { color: var(--green); } .score.loss { color: var(--red); } .score.tie { color: var(--muted); }
+  .vs-sep { font-size: 11px; color: var(--muted); margin: 0 2px; }
+  .game-meta { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
+  .badge-final { background: var(--green-light); color: var(--green); }
+  .badge-sched { background: var(--amber-light); color: var(--amber); }
+  .badge-loc { background: var(--dirt-light); color: var(--dirt); }
+  .badge-champ { background: var(--gold-light); color: #b8860b; }
+  .game-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .inline-score { width: 52px; padding: 5px 8px; font-size: 14px; font-weight: 700; text-align: center; }
+  .schedule-day { margin-bottom: 20px; }
+  .schedule-day-header { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 15px; font-weight: 400; letter-spacing: 0.5px; text-transform: uppercase; padding: 8px 0; border-bottom: 2px solid var(--border); margin-bottom: 10px; color: var(--text); }
+  .standings-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .standings-table th { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 12px; font-weight: 400; letter-spacing: 0.5px; text-transform: uppercase; padding: 10px 12px; background: #f7f7f7; border-bottom: 2px solid var(--border); text-align: left; color: var(--muted); }
+  .standings-table th.center, .standings-table td.center { text-align: center; }
+  .standings-table td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; }
+  .standings-table tr:last-child td { border-bottom: none; }
+  .rank-num { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 16px; font-weight: 400; }
+  .rank-1 { color: var(--gold); } .rank-2 { color: #888; } .rank-other { color: #ccc; }
+  .rd-pos { color: var(--green); font-weight: 700; } .rd-neg { color: var(--red); font-weight: 700; }
+  .tiebreak-note { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .pool-title { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; letter-spacing: .7px; text-transform: uppercase; margin: 10px 0; color: #333; }
+  .matrix-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 18px; }
+  .matrix-table { width: 100%; border-collapse: collapse; min-width: 640px; font-size: 13px; }
+  .matrix-table th { background: #f7f7f7; color: var(--muted); font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-weight: 400; letter-spacing: .4px; padding: 9px; border-bottom: 2px solid var(--border); border-right: 1px solid #eee; text-align: center; }
+  .matrix-table th:first-child { text-align: left; position: sticky; left: 0; background: #f7f7f7; z-index: 1; }
+  .matrix-table td { padding: 9px; border-bottom: 1px solid #eee; border-right: 1px solid #eee; text-align: center; vertical-align: middle; }
+  .matrix-table td:first-child { text-align: left; font-weight: 700; position: sticky; left: 0; background: #fff; z-index: 1; }
+  .matrix-win { color: var(--green); font-weight: 800; }
+  .matrix-loss { color: var(--red); font-weight: 800; }
+  .matrix-tie { color: var(--muted); font-weight: 800; }
+  .matrix-empty { color: #bbb; }
+  .scoreboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
+  .sb-division { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+  .sb-div-header { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; color: #fff; }
+  .sb-div-title { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 16px; font-weight: 400; letter-spacing: 1px; }
+  .sb-div-leader { font-size: 11px; opacity: 0.85; }
+  .sb-games { padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .sb-game { background: #fafafa; border: 1px solid #f0f0f0; border-radius: 6px; padding: 8px 10px; }
+  .sb-game-row { display: flex; justify-content: space-between; align-items: center; }
+  .sb-team { font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 8px; }
+  .sb-team.win-team { font-weight: 700; }
+  .sb-score { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 16px; font-weight: 400; min-width: 22px; text-align: right; }
+  .sb-game-info { font-size: 10px; color: var(--muted); margin-top: 4px; }
+  .sb-empty { font-size: 13px; color: var(--muted); padding: 12px 10px; }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
+  @media (max-width: 650px) {
+    header { padding: 0 12px; }
+    header h1 { font-size: 16px; }
+    .header-actions { gap: 4px; }
+    .btn-ghost { padding: 6px 8px; }
+    .game-row { flex-wrap: wrap; }
+    .team-name { max-width: 145px; }
+    .game-time-col { text-align: left; min-width: 100%; display:flex; gap:8px; }
+  }
+</style></head><body><header><h1>⚾ <span>Tournament</span> Results</h1><div class="header-actions"><button class="btn btn-ghost" onclick="window.print()">Print</button></div></header><div class="container"><div class="div-tabs" id="divTabs"></div><div class="main-nav"><button class="nav-tab active" onclick="switchTab('standings',this)">Standings</button><button class="nav-tab" onclick="switchTab('results',this)">Results Matrix</button><button class="nav-tab" onclick="switchTab('scoreboard',this)">Scoreboard</button></div><div id="tab-schedule" style="display:none"></div><div id="tab-standings"></div><div id="tab-results" style="display:none"></div><div id="tab-scoreboard" style="display:none"></div></div><script>
+const DIVISIONS = {
+  "9U": ["Findlay 9U","Bellevue (The VUE) 9U","Tiffin Anchors 9U","Webb Gems"],
+  "10U": ["Findlay Jr. Trojans 10U","Bellevue (The VUE) 10U","Seneca Sting 10U","Crawford County Coyotes 10U"],
+  "11U": ["Seneca Sting 11U","Buckeye Elite 11U","Ohio Bison Corwin 11U","Ohio Cyclones 11U"],
+  "12U": ["Bellevue (The VUE) 12U","Warriors 12U","Shovel City Stars 12U","Napoleon Wildcats 12U"],
+  "14U": ["North Central Ohio Aces","Fremont Baseball Club","OFBC - River Monsters 14U","Bedford Elite 14U","Motor City Mayhem 14U","Midwest Monsters Baseball Club","Anthony Wayne Jr. Generals 14U","Columbus Sharks"],
+  "16U": ["Mojo 15U","Buckeye Elite 15U - Boyce","Pickaway Outlaws 15U","Mac Bulldogs 15U","Fostoria Jr. Legion"]
+};
+const POOLS = {
+  "14U": {
+    "Dedrick Pool": ["North Central Ohio Aces","Fremont Baseball Club","OFBC - River Monsters 14U","Anthony Wayne Jr. Generals 14U"],
+    "Young Pool": ["Motor City Mayhem 14U","Bedford Elite 14U","Midwest Monsters Baseball Club","Columbus Sharks"]
+  }
+};
+const DIV_COLORS = {"9U":"#2563a8","10U":"#1a7a3c","11U":"#b45309","12U":"#9333a0","14U":"#c0392b","16U":"#0f766e"};
+const SCHEDULE = [
+  {div:"9U",date:"Sat 5/30",time:"9:00 AM",site:"Dan Waters Field",team1:"Webb Gems",team2:"Tiffin Anchors 9U"},
+  {div:"9U",date:"Sat 5/30",time:"11:00 AM",site:"Dan Waters Field",team1:"Webb Gems",team2:"Bellevue (The VUE) 9U"},
+  {div:"9U",date:"Sat 5/30",time:"1:00 PM",site:"Dan Waters Field",team1:"Findlay 9U",team2:"Tiffin Anchors 9U"},
+  {div:"9U",date:"Sat 5/30",time:"3:00 PM",site:"Dan Waters Field",team1:"Bellevue (The VUE) 9U",team2:"Findlay 9U"},
+  {div:"9U",date:"Sun 5/31",time:"9:00 AM",site:"Dan Waters Field",team1:"Webb Gems",team2:"Findlay 9U"},
+  {div:"9U",date:"Sun 5/31",time:"11:00 AM",site:"Dan Waters Field",team1:"Bellevue (The VUE) 9U",team2:"Tiffin Anchors 9U"},
+  {div:"9U",date:"Sun 5/31",time:"1:00 PM",site:"Dan Waters Field",team1:"4 Seed",team2:"3 Seed",note:"Consolation"},
+  {div:"9U",date:"Sun 5/31",time:"3:00 PM",site:"Dan Waters Field",team1:"1 Seed",team2:"2 Seed",note:"Championship"},
+  {div:"10U",date:"Sat 5/30",time:"9:00 AM",site:"Steve Allbaugh Field",team1:"Findlay Jr. Trojans 10U",team2:"Bellevue (The VUE) 10U"},
+  {div:"10U",date:"Sat 5/30",time:"11:00 AM",site:"Steve Allbaugh Field",team1:"Seneca Sting 10U",team2:"Findlay Jr. Trojans 10U"},
+  {div:"10U",date:"Sat 5/30",time:"1:00 PM",site:"Steve Allbaugh Field",team1:"Bellevue (The VUE) 10U",team2:"Crawford County Coyotes 10U"},
+  {div:"10U",date:"Sat 5/30",time:"3:00 PM",site:"Steve Allbaugh Field",team1:"Crawford County Coyotes 10U",team2:"Seneca Sting 10U"},
+  {div:"10U",date:"Sun 5/31",time:"9:00 AM",site:"Steve Allbaugh Field",team1:"Seneca Sting 10U",team2:"Bellevue (The VUE) 10U"},
+  {div:"10U",date:"Sun 5/31",time:"11:00 AM",site:"Steve Allbaugh Field",team1:"Findlay Jr. Trojans 10U",team2:"Crawford County Coyotes 10U"},
+  {div:"10U",date:"Sun 5/31",time:"1:00 PM",site:"Steve Allbaugh Field",team1:"4 Seed",team2:"3 Seed",note:"Consolation"},
+  {div:"10U",date:"Sun 5/31",time:"3:00 PM",site:"Steve Allbaugh Field",team1:"1 Seed",team2:"2 Seed",note:"Championship"},
+  {div:"11U",date:"Sat 5/30",time:"8:00 AM",site:"Jocko Huffman Field",team1:"Seneca Sting 11U",team2:"Buckeye Elite 11U"},
+  {div:"11U",date:"Sat 5/30",time:"12:00 PM",site:"Jocko Huffman Field",team1:"Ohio Cyclones 11U",team2:"Seneca Sting 11U"},
+  {div:"11U",date:"Sat 5/30",time:"4:00 PM",site:"Jocko Huffman Field",team1:"Buckeye Elite 11U",team2:"Ohio Bison Corwin 11U"},
+  {div:"11U",date:"Sat 5/30",time:"8:00 PM",site:"Jocko Huffman Field",team1:"Ohio Bison Corwin 11U",team2:"Ohio Cyclones 11U"},
+  {div:"11U",date:"Sun 5/31",time:"10:00 AM",site:"Jocko Huffman Field",team1:"Seneca Sting 11U",team2:"Ohio Bison Corwin 11U"},
+  {div:"11U",date:"Sun 5/31",time:"2:00 PM",site:"Jocko Huffman Field",team1:"Buckeye Elite 11U",team2:"Ohio Cyclones 11U"},
+  {div:"11U",date:"Sun 5/31",time:"5:00 PM",site:"Charles Dedrick Field",team1:"4 Seed",team2:"3 Seed",note:"Consolation"},
+  {div:"11U",date:"Sun 5/31",time:"6:00 PM",site:"Jocko Huffman Field",team1:"1 Seed",team2:"2 Seed",note:"Championship"},
+  {div:"12U",date:"Sat 5/30",time:"10:00 AM",site:"Jocko Huffman Field",team1:"Bellevue (The VUE) 12U",team2:"Warriors 12U"},
+  {div:"12U",date:"Sat 5/30",time:"2:00 PM",site:"Jocko Huffman Field",team1:"Shovel City Stars 12U",team2:"Napoleon Wildcats 12U"},
+  {div:"12U",date:"Sat 5/30",time:"4:00 PM",site:"Charles Dedrick Field",team1:"Napoleon Wildcats 12U",team2:"Warriors 12U"},
+  {div:"12U",date:"Sat 5/30",time:"6:00 PM",site:"Jocko Huffman Field",team1:"Shovel City Stars 12U",team2:"Bellevue (The VUE) 12U"},
+  {div:"12U",date:"Sun 5/31",time:"8:00 AM",site:"Jocko Huffman Field",team1:"Bellevue (The VUE) 12U",team2:"Napoleon Wildcats 12U"},
+  {div:"12U",date:"Sun 5/31",time:"12:00 PM",site:"Jocko Huffman Field",team1:"Warriors 12U",team2:"Shovel City Stars 12U"},
+  {div:"12U",date:"Sun 5/31",time:"4:00 PM",site:"Jocko Huffman Field",team1:"4 Seed",team2:"3 Seed",note:"Consolation"},
+  {div:"12U",date:"Sun 5/31",time:"8:00 PM",site:"Jocko Huffman Field",team1:"1 Seed",team2:"2 Seed",note:"Championship"},
+  {div:"14U",date:"Sat 5/30",time:"8:00 AM",site:"Charles Dedrick Field",team1:"North Central Ohio Aces",team2:"Fremont Baseball Club",pool:"Dedrick Pool"},
+  {div:"14U",date:"Sat 5/30",time:"10:00 AM",site:"Charles Dedrick Field",team1:"OFBC - River Monsters 14U",team2:"Fremont Baseball Club",pool:"Dedrick Pool"},
+  {div:"14U",date:"Sat 5/30",time:"12:00 PM",site:"Charles Dedrick Field",team1:"Anthony Wayne Jr. Generals 14U",team2:"North Central Ohio Aces",pool:"Dedrick Pool"},
+  {div:"14U",date:"Sat 5/30",time:"2:00 PM",site:"Charles Dedrick Field",team1:"Anthony Wayne Jr. Generals 14U",team2:"OFBC - River Monsters 14U",pool:"Dedrick Pool"},
+  {div:"14U",date:"Sun 5/31",time:"9:00 AM",site:"Charles Dedrick Field",team1:"North Central Ohio Aces",team2:"OFBC - River Monsters 14U",pool:"Dedrick Pool"},
+  {div:"14U",date:"Sun 5/31",time:"11:00 AM",site:"Charles Dedrick Field",team1:"Anthony Wayne Jr. Generals 14U",team2:"Fremont Baseball Club",pool:"Dedrick Pool"},
+  {div:"14U",date:"Sun 5/31",time:"3:00 PM",site:"Charles Dedrick Field",team1:"Dedrick #3",team2:"Young #3",note:"Semifinal"},
+  {div:"14U",date:"Sat 5/30",time:"8:00 AM",site:"Roger Young Field",team1:"Motor City Mayhem 14U",team2:"Columbus Sharks",pool:"Young Pool"},
+  {div:"14U",date:"Sat 5/30",time:"10:00 AM",site:"Roger Young Field",team1:"Midwest Monsters Baseball Club",team2:"Bedford Elite 14U",pool:"Young Pool"},
+  {div:"14U",date:"Sat 5/30",time:"12:00 PM",site:"Roger Young Field",team1:"Bedford Elite 14U",team2:"Motor City Mayhem 14U",pool:"Young Pool"},
+  {div:"14U",date:"Sat 5/30",time:"2:00 PM",site:"Roger Young Field",team1:"Columbus Sharks",team2:"Midwest Monsters Baseball Club",pool:"Young Pool"},
+  {div:"14U",date:"Sun 5/31",time:"9:00 AM",site:"Roger Young Field",team1:"Motor City Mayhem 14U",team2:"Midwest Monsters Baseball Club",pool:"Young Pool"},
+  {div:"14U",date:"Sun 5/31",time:"11:00 AM",site:"Roger Young Field",team1:"Columbus Sharks",team2:"Bedford Elite 14U",pool:"Young Pool"},
+  {div:"14U",date:"Sun 5/31",time:"3:00 PM",site:"Roger Young Field",team1:"Young #2",team2:"Dedrick #2",note:"Semifinal"},
+  {div:"14U",date:"Sun 5/31",time:"5:00 PM",site:"Roger Young Field",team1:"14U Champ 1",team2:"14U Champ 2",note:"Championship"},
+  {div:"16U",date:"Sat 5/30",time:"9:00 AM",site:"Tornado Field",team1:"Pickaway Outlaws 15U",team2:"Buckeye Elite 15U - Boyce"},
+  {div:"16U",date:"Sat 5/30",time:"11:00 AM",site:"Tornado Field",team1:"Buckeye Elite 15U - Boyce",team2:"Fostoria Jr. Legion"},
+  {div:"16U",date:"Sat 5/30",time:"1:00 PM",site:"Tornado Field",team1:"Pickaway Outlaws 15U",team2:"Mojo 15U"},
+  {div:"16U",date:"Sat 5/30",time:"3:00 PM",site:"Tornado Field",team1:"Fostoria Jr. Legion",team2:"Mac Bulldogs 15U"},
+  {div:"16U",date:"Sat 5/30",time:"5:00 PM",site:"Tornado Field",team1:"Mac Bulldogs 15U",team2:"Mojo 15U"},
+  {div:"16U",date:"Sun 5/31",time:"9:00 AM",site:"Tornado Field",team1:"Mac Bulldogs 15U",team2:"Pickaway Outlaws 15U"},
+  {div:"16U",date:"Sun 5/31",time:"11:00 AM",site:"Tornado Field",team1:"Pickaway Outlaws 15U",team2:"Fostoria Jr. Legion"},
+  {div:"16U",date:"Sun 5/31",time:"1:00 PM",site:"Tornado Field",team1:"Buckeye Elite 15U - Boyce",team2:"Mac Bulldogs 15U"}
+];
+let savedScores = {"0":{"score1":15,"score2":12},"1":{"score1":7,"score2":6},"2":{"score1":10,"score2":8},"3":{"score1":20,"score2":3},"4":{"score1":11,"score2":14},"5":{"score1":9,"score2":6}};
+let activeDivision = "9U";
+let currentTab = 'standings';
+let filterDay = 'all';
+let searchQ = '';
+let enteringId = null;
+function save() { localStorage.setItem('t_scores', JSON.stringify(savedScores)); }
+function switchTab(tab, el) {
+  currentTab = tab; enteringId = null;
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['schedule','standings','results','scoreboard'].forEach(t => document.getElementById('tab-'+t).style.display = t===tab?'':'none');
+  render();
+}
+function setDivision(div) {
+  activeDivision = div; enteringId = null; filterDay = 'all';
+  document.querySelectorAll('.div-tab').forEach(t => {
+    const isActive = t.dataset.div === div;
+    t.classList.toggle('active', isActive);
+    t.style.background = isActive ? DIV_COLORS[div] : '';
+    t.style.borderColor = isActive ? DIV_COLORS[div] : '';
+    t.style.color = isActive ? '#fff' : '';
+  });
+  render();
+}
+function renderDivTabs() {
+  document.getElementById('divTabs').innerHTML = Object.keys(DIVISIONS).map(d =>
+    `<button class="div-tab${d===activeDivision?' active':''}" data-div="${d}" onclick="setDivision('${d}')" style="${d===activeDivision?'background:'+DIV_COLORS[d]+';border-color:'+DIV_COLORS[d]+';color:#fff':''}">${d}</button>`
+  ).join('');
+}
+function getTeamGroups(div) {
+  if (POOLS[div]) return POOLS[div];
+  return { [div + ' Division']: DIVISIONS[div] };
+}
+function computeStandingsForTeams(div, teams) {
+  const stats = {};
+  teams.forEach(t => { stats[t] = {w:0,l:0,t:0,rs:0,ra:0}; });
+  SCHEDULE.forEach((g,idx) => {
+    if(g.div!==div || !savedScores[idx]) return;
+    if(!teams.includes(g.team1) || !teams.includes(g.team2)) return;
+    const sc = savedScores[idx]; const s=+sc.score1, o=+sc.score2;
+    if(s>o){stats[g.team1].w++;stats[g.team2].l++;}
+    else if(o>s){stats[g.team2].w++;stats[g.team1].l++;}
+    else{stats[g.team1].t++;stats[g.team2].t++;}
+    stats[g.team1].rs+=s; stats[g.team1].ra+=o;
+    stats[g.team2].rs+=o; stats[g.team2].ra+=s;
+  });
+  function h2h(a,b) {
+    let aw=0,bw=0;
+    SCHEDULE.forEach((g,idx)=>{
+      if(g.div!==div || !savedScores[idx]) return;
+      if(!teams.includes(g.team1) || !teams.includes(g.team2)) return;
+      if(!((g.team1===a&&g.team2===b)||(g.team1===b&&g.team2===a))) return;
+      const sc=savedScores[idx];
+      if(g.team1===a){if(+sc.score1>+sc.score2)aw++;else if(+sc.score2>+sc.score1)bw++;}
+      else{if(+sc.score2>+sc.score1)aw++;else if(+sc.score1>+sc.score2)bw++;}
+    });
+    return aw-bw;
+  }
+  const records = {};
+  teams.forEach(t => {
+    const s = stats[t];
+    const key = s.w + '-' + s.l + '-' + s.t;
+    if(!records[key]) records[key] = [];
+    records[key].push(t);
+  });
+  return [...teams].sort((a,b)=>{
+    const sa=stats[a], sb=stats[b];
+    const recA = sa.w + '-' + sa.l + '-' + sa.t;
+    const recB = sb.w + '-' + sb.l + '-' + sb.t;
+    const pctA = (sa.w + 0.5 * sa.t) / Math.max(1, sa.w + sa.l + sa.t);
+    const pctB = (sb.w + 0.5 * sb.t) / Math.max(1, sb.w + sb.l + sb.t);
+    if(pctA !== pctB) return pctB - pctA;
+    if(recA === recB && records[recA].length === 2) {
+      const h=h2h(b,a);
+      if(h!==0) return h;
+    }
+    if(sa.ra!==sb.ra) return sa.ra-sb.ra;
+    return (sb.rs-sb.ra)-(sa.rs-sa.ra);
+  }).map((t,i)=>({rank:i+1,team:t,...stats[t],rd:stats[t].rs-stats[t].ra}));
+}
+function computeStandings(div) { return computeStandingsForTeams(div, DIVISIONS[div]); }
+function countCompletedPoolGames(div, teams) {
+  return SCHEDULE.filter((g,idx) => g.div===div && teams.includes(g.team1) && teams.includes(g.team2) && savedScores[idx]).length;
+}
+function countScheduledPoolGames(div, teams) {
+  return SCHEDULE.filter(g => g.div===div && teams.includes(g.team1) && teams.includes(g.team2)).length;
+}
+function poolIsComplete(div, teams) {
+  return countScheduledPoolGames(div, teams) > 0 && countCompletedPoolGames(div, teams) === countScheduledPoolGames(div, teams);
+}
+function getSeedTeam(div, seedText) {
+  if(!seedText) return null;
+  const generic = seedText.match(/^([0-9]+) Seed$/);
+  if(generic) {
+    const teams = DIVISIONS[div];
+    if(!poolIsComplete(div, teams)) return null;
+    const standings = computeStandingsForTeams(div, teams);
+    const row = standings[Number(generic[1])-1];
+    return row ? row.team : null;
+  }
+  const poolSeed = seedText.match(/^(Dedrick|Young) #([0-9]+)$/);
+  if(poolSeed && div === '14U') {
+    const poolName = poolSeed[1] + ' Pool';
+    const teams = POOLS['14U'][poolName];
+    if(!teams || !poolIsComplete(div, teams)) return null;
+    const standings = computeStandingsForTeams(div, teams);
+    const row = standings[Number(poolSeed[2])-1];
+    return row ? row.team : null;
+  }
+  return null;
+}
+function getDisplayTeam(div, team) {
+  const seededTeam = getSeedTeam(div, team);
+  return seededTeam ? team + ': ' + seededTeam : team;
+}
+function isPlayableGame(g) {
+  return (DIVISIONS[g.div].includes(g.team1) && DIVISIONS[g.div].includes(g.team2)) || !!(getSeedTeam(g.div, g.team1) && getSeedTeam(g.div, g.team2));
+}
+function startInline(idx) { enteringId = idx; render(); setTimeout(()=>{ const el=document.getElementById('is1-'+idx); if(el) el.focus(); },30); }
+function cancelInline() { enteringId = null; render(); }
+function saveInline(idx) {
+  const s1 = document.getElementById('is1-'+idx).value;
+  const s2 = document.getElementById('is2-'+idx).value;
+  if(s1===''||s2==='') return alert('Enter both scores.');
+  savedScores[idx] = {score1:+s1, score2:+s2};
+  save(); enteringId = null; render();
+}
+function clearScore(idx) {
+  if(!confirm('Clear this score?')) return;
+  delete savedScores[idx]; save(); render();
+}
+function filterByDay(day) { filterDay = day; render(); }
+function getFilteredGames() {
+  return SCHEDULE.map((g,i)=>({...g,idx:i}))
+    .filter(g => g.div === activeDivision)
+    .filter(g => filterDay==='all' || g.date.startsWith(filterDay))
+    .filter(g => {
+      if(!searchQ) return true;
+      const q = searchQ.toLowerCase();
+      return g.team1.toLowerCase().includes(q)||g.team2.toLowerCase().includes(q)||g.site.toLowerCase().includes(q)||(g.pool||'').toLowerCase().includes(q);
+    });
+}
+function renderSchedule() {
+  const games = getFilteredGames();
+  let html = `<div class="search-bar"><input type="text" placeholder="Search team, field, or pool..." value="${searchQ}" oninput="searchQ=this.value;render()" style="max-width:300px"></div>
+  <div class="filter-row"><span style="font-size:12px;color:var(--muted);margin-right:4px">Day:</span>
+    <button class="filter-chip${filterDay==='all'?' active':''}" onclick="filterByDay('all')">All</button>
+    <button class="filter-chip${filterDay==='Sat'?' active':''}" onclick="filterByDay('Sat')">Sat 5/30</button>
+    <button class="filter-chip${filterDay==='Sun'?' active':''}" onclick="filterByDay('Sun')">Sun 5/31</button>
+  </div>`;
+  if(games.length===0) return html+`<div class="empty-state"><div style="font-size:36px">🔍</div><p>No games match your filter.</p></div>`;
+  const grouped = {};
+  games.forEach(g => { const key = activeDivision==='14U' && g.pool ? g.date + ' — ' + g.pool : g.date; if(!grouped[key]) grouped[key]=[]; grouped[key].push(g); });
+  Object.entries(grouped).forEach(([day, dGames]) => {
+    html += `<div class="schedule-day"><div class="schedule-day-header">${day}</div><div class="game-list">`;
+    dGames.forEach(g => html += renderGameRow(g));
+    html += `</div></div>`;
+  });
+  return html;
+}
+function renderGameRow(g) {
+  const sc = savedScores[g.idx];
+  const isFinal = !!sc;
+  const isChamp = g.note==='Championship';
+  const isEntering = enteringId === g.idx;
+  const s1gt = sc && +sc.score1 > +sc.score2, s2gt = sc && +sc.score2 > +sc.score1;
+  const realTeams = isPlayableGame(g);
+  let html = `<div class="game-row${isFinal?' is-final':''}${isChamp?' is-champ':''}">
+    <div class="game-time-col"><div class="game-time">${g.time}</div><div class="game-date">${g.site.replace(' Field','')}</div></div>
+    <div class="game-teams"><span class="team-name" title="${getDisplayTeam(g.div, g.team1)}" style="${isFinal&&s1gt?'font-weight:800':''}">${getDisplayTeam(g.div, g.team1)}</span>`;
+  if(isEntering) {
+    html += `<input class="inline-score" id="is1-${g.idx}" type="number" min="0" placeholder="0"${sc?` value="${sc.score1}"`:''} onkeydown="if(event.key==='Enter')saveInline(${g.idx})"><span class="vs-sep">–</span><input class="inline-score" id="is2-${g.idx}" type="number" min="0" placeholder="0"${sc?` value="${sc.score2}"`:''} onkeydown="if(event.key==='Enter')saveInline(${g.idx})">`;
+  } else if(isFinal) {
+    html += `<span class="score ${s1gt?'win':s2gt?'loss':'tie'}">${sc.score1}</span><span class="vs-sep">–</span><span class="score ${s2gt?'win':s1gt?'loss':'tie'}">${sc.score2}</span>`;
+  } else {
+    html += `<span class="vs-sep" style="margin:0 6px">vs</span>`;
+  }
+  html += `<span class="team-name" title="${getDisplayTeam(g.div, g.team2)}" style="${isFinal&&s2gt?'font-weight:800':''}">${getDisplayTeam(g.div, g.team2)}</span></div>
+    <div class="game-meta">${g.pool?`<span class="badge badge-loc">${g.pool}</span>`:''}${g.note?`<span class="badge ${isChamp?'badge-champ':'badge-sched'}">${g.note}</span>`:''}${isFinal?`<span class="badge badge-final">Final</span>`:`<span class="badge badge-sched">Scheduled</span>`}</div>
+    <div class="game-actions">`;
+  if(isEntering) html += `<button class="btn btn-primary btn-sm" onclick="saveInline(${g.idx})">Save</button><button class="btn btn-sm" onclick="cancelInline()">✕</button>`;
+  else if(realTeams) { html += `<button class="btn btn-sm" onclick="startInline(${g.idx})">${isFinal?'Edit':'Score'}</button>`; if(isFinal) html += `<button class="btn btn-sm btn-danger" onclick="clearScore(${g.idx})">✕</button>`; }
+  html += `</div></div>`;
+  return html;
+}
+function renderStandings() {
+  const groups = getTeamGroups(activeDivision);
+  let html = '';
+  Object.entries(groups).forEach(([name, teams]) => {
+    const s = computeStandingsForTeams(activeDivision, teams);
+    html += `<div class="pool-title">${name}</div><div class="card" style="padding:0;overflow:hidden"><table class="standings-table"><thead><tr><th>#</th><th>Team</th><th class="center">W</th><th class="center">L</th><th class="center">T</th><th class="center">RS</th><th class="center">RA</th><th class="center">RD</th></tr></thead><tbody>${s.map(r=>`<tr><td><span class="rank-num ${r.rank===1?'rank-1':r.rank===2?'rank-2':'rank-other'}">${r.rank}</span></td><td style="font-weight:${r.rank<=2?700:400}">${r.team}</td><td class="center" style="color:var(--green);font-weight:700">${r.w}</td><td class="center" style="color:${r.l>0?'var(--red)':'var(--muted)'}">${r.l}</td><td class="center" style="color:var(--muted)">${r.t}</td><td class="center">${r.rs}</td><td class="center">${r.ra}</td><td class="center"><span class="${r.rd>0?'rd-pos':r.rd<0?'rd-neg':''}">${r.rd>0?'+':''}${r.rd}</span></td></tr>`).join('')}</tbody></table></div>`;
+  });
+  html += `<p class="tiebreak-note">Tiebreakers: 1. Win/loss record | 2. Head-to-head | 3. Fewest runs allowed | 4. Run differential. 14U is ranked inside each pool.</p>`;
+  return html;
+}
+function findGameBetween(div, a, b) {
+  return SCHEDULE.map((g,i)=>({...g,idx:i})).find(g => g.div===div && ((g.team1===a && g.team2===b) || (g.team1===b && g.team2===a)) && savedScores[g.idx]);
+}
+function matrixCell(div, rowTeam, colTeam) {
+  if(rowTeam===colTeam) return '<span class="matrix-empty">—</span>';
+  const g = findGameBetween(div, rowTeam, colTeam);
+  if(!g) return '<span class="matrix-empty">Not played</span>';
+  const sc = savedScores[g.idx];
+  const rowScore = g.team1===rowTeam ? +sc.score1 : +sc.score2;
+  const colScore = g.team1===rowTeam ? +sc.score2 : +sc.score1;
+  const cls = rowScore > colScore ? 'matrix-win' : rowScore < colScore ? 'matrix-loss' : 'matrix-tie';
+  const prefix = rowScore > colScore ? 'W' : rowScore < colScore ? 'L' : 'T';
+  return `<span class="${cls}">${prefix} ${rowScore}-${colScore}</span><div style="font-size:10px;color:#888;margin-top:2px">${g.date}</div>`;
+}
+function renderResultsMatrix() {
+  const groups = getTeamGroups(activeDivision);
+  let html = `<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Each cell shows the result from the row team's perspective.</p>`;
+  Object.entries(groups).forEach(([name, teams]) => {
+    html += `<div class="pool-title">${name}</div><div class="matrix-wrap"><table class="matrix-table"><thead><tr><th>Team</th>${teams.map(t=>`<th title="${t}">${shortTeam(t)}</th>`).join('')}</tr></thead><tbody>`;
+    teams.forEach(row => { html += `<tr><td>${row}</td>${teams.map(col=>`<td>${matrixCell(activeDivision,row,col)}</td>`).join('')}</tr>`; });
+    html += `</tbody></table></div>`;
+  });
+  return html;
+}
+function shortTeam(t) { return t.replace('Bellevue (The VUE)','Bellevue').replace('Findlay Jr. Trojans','Findlay').replace('Crawford County Coyotes','Coyotes').replace('North Central Ohio','NCO').replace('Anthony Wayne Jr. Generals','AW Generals').replace('Midwest Monsters Baseball Club','Midwest Monsters').replace('OFBC - River Monsters','River Monsters').replace('Buckeye Elite 15U - Boyce','Buckeye Elite').replace('Pickaway Outlaws','Pickaway'); }
+function renderScoreboard() {
+  return `<div class="scoreboard-grid">${Object.keys(DIVISIONS).map(div=>{
+    const s = computeStandings(div); const leader = s[0]; const hasGames = leader.w+leader.l+leader.t>0;
+    const finishedGames = SCHEDULE.map((g,i)=>({...g,idx:i})).filter(g=>g.div===div&&savedScores[g.idx]);
+    return `<div class="sb-division"><div class="sb-div-header" style="background:${DIV_COLORS[div]}"><span class="sb-div-title">${div} Division</span>${hasGames?`<span class="sb-div-leader">${leader.team} (${leader.w}-${leader.l})</span>`:''}</div><div class="sb-games">${finishedGames.length===0?`<div class="sb-empty">No final scores yet</div>`:finishedGames.map(g=>{ const sc=savedScores[g.idx]; const s1=+sc.score1,s2=+sc.score2; return `<div class="sb-game"><div class="sb-game-row"><span class="sb-team${s1>s2?' win-team':''}">${g.team1}</span><span class="sb-score" style="color:${s1>s2?'var(--green)':s1<s2?'var(--red)':'var(--muted)'}">${s1}</span></div><div class="sb-game-row"><span class="sb-team${s2>s1?' win-team':''}">${g.team2}</span><span class="sb-score" style="color:${s2>s1?'var(--green)':s2<s1?'var(--red)':'var(--muted)'}">${s2}</span></div><div class="sb-game-info">${g.site} · ${g.date} ${g.time}${g.pool?' · '+g.pool:''}</div></div>`; }).join('')}</div></div>`;
+  }).join('')}</div>`;
+}
+function render() {
+  renderDivTabs();
+  if(currentTab==='schedule') document.getElementById('tab-schedule').innerHTML = renderSchedule();
+  if(currentTab==='standings') document.getElementById('tab-standings').innerHTML = renderStandings();
+  if(currentTab==='results') document.getElementById('tab-results').innerHTML = renderResultsMatrix();
+  if(currentTab==='scoreboard') document.getElementById('tab-scoreboard').innerHTML = renderScoreboard();
+}
+function exportJSON() {
+  const blob=new Blob([JSON.stringify({savedScores},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='tournament_scores.json'; a.click();
+}
+function importJSON() {
+  const input=document.createElement('input'); input.type='file'; input.accept='application/json,.json';
+  input.onchange=e=>{ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); savedScores=data.savedScores||data||{}; save(); render(); alert('Scores imported.'); } catch(err){ alert('Could not import file.'); } }; reader.readAsText(file); };
+  input.click();
+}
+function generateShareHTML() {
+  const styles = document.querySelector('style').innerHTML;
+  const currentScores = JSON.stringify(savedScores);
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Tournament Results</title><style>${styles}</style></head><body><header><h1>⚾ <span>Tournament</span> Results</h1><div class="header-actions"><button class="btn btn-ghost" onclick="window.print()">Print</button></div></header><div class="container"><div class="div-tabs" id="divTabs"></div><div class="main-nav"><button class="nav-tab active" onclick="switchTab('standings',this)">Standings</button><button class="nav-tab" onclick="switchTab('results',this)">Results Matrix</button><button class="nav-tab" onclick="switchTab('scoreboard',this)">Scoreboard</button></div><div id="tab-schedule" style="display:none"></div><div id="tab-standings"></div><div id="tab-results" style="display:none"></div><div id="tab-scoreboard" style="display:none"></div></div><script>${document.querySelector('script').innerHTML.replace("let savedScores = JSON.parse(localStorage.getItem('t_scores') || '{}');", "let savedScores = " + currentScores + ";").replace("let currentTab = 'schedule';", "let currentTab = 'standings';")}<\/script></body></html>`;
+}
+function downloadShareHTML() {
+  const blob=new Blob([generateShareHTML()],{type:'text/html'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='tournament_results.html'; a.click();
+}
+render();
+</script></body></html>
