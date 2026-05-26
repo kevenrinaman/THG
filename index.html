@@ -48,13 +48,15 @@
   .btn-danger { color: var(--red); border-color: #f5c6c3; }
   .btn-danger:hover { background: var(--red-light); }
   .container { max-width: 1100px; margin: 0 auto; padding: 20px 16px; }
-  .div-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .sport-tabs, .div-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .sport-tab,
   .div-tab {
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 13px; font-weight: 400;
     letter-spacing: 0.5px; padding: 5px 14px; border-radius: 20px;
     border: 1.5px solid var(--border); background: var(--card); color: var(--muted); cursor: pointer; transition: all 0.15s;
   }
-  .div-tab:hover { border-color: #aaa; color: var(--text); }
+  .sport-tab:hover, .div-tab:hover { border-color: #aaa; color: var(--text); }
+  .sport-tab.active { background:#111; color:#fff; border-color:#111; }
   .div-tab.active { color: #fff; border-color: transparent; }
   .main-nav { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 2px solid var(--border); overflow-x:auto; }
   .nav-tab {
@@ -157,13 +159,19 @@
     footer { font-size: 11px; padding: 12px 8px; }
   }
 </style></head><body><header><h1>⚾ <span>THG</span> Tournament Results</h1><div class="header-actions"><button class="btn btn-ghost" onclick="window.print()">Print</button></div></header><div class="page-wrap"><div class="container"><div class="div-tabs" id="divTabs"></div><div class="main-nav"><button class="nav-tab active" onclick="switchTab('schedule',this)">Schedule</button><button class="nav-tab" onclick="switchTab('standings',this)">Standings</button><button class="nav-tab" onclick="switchTab('results',this)">Results Matrix</button><button class="nav-tab" onclick="switchTab('brackets',this)">Placement Games</button><button class="nav-tab" onclick="switchTab('scoreboard',this)">Scoreboard</button></div><div id="tab-schedule"></div><div id="tab-standings" style="display:none"></div><div id="tab-results" style="display:none"></div><div id="tab-brackets" style="display:none"></div><div id="tab-scoreboard" style="display:none"></div></div></div><footer>Powered by <strong>3DU, LLC</strong></footer><script>
+const SPORT_DIVISIONS = {
+  Baseball: ["9U","10U","11U","12U","14U","16U"],
+  Softball: ["Softball 10U","Softball 12U"]
+};
 const DIVISIONS = {
   "9U": ["Findlay 9U","Bellevue (The VUE) 9U","Tiffin Anchors 9U","Webb Gems"],
   "10U": ["Findlay Jr. Trojans 10U","Bellevue (The VUE) 10U","Seneca Sting 10U","Crawford County Coyotes 10U"],
   "11U": ["Seneca Sting 11U","Buckeye Elite 11U","Ohio Bison Corwin 11U","Ohio Cyclones 11U"],
   "12U": ["Bellevue (The VUE) 12U","Warriors 12U","Shovel City Stars 12U","Napoleon Wildcats 12U"],
   "14U": ["North Central Ohio Aces","Fremont Baseball Club","OFBC - River Monsters 14U","Bedford Elite 14U","Motor City Mayhem 14U","Midwest Monsters Baseball Club","Anthony Wayne Jr. Generals 14U","Columbus Sharks"],
-  "16U": ["Mojo 15U","Buckeye Elite 15U - Boyce","Pickaway Outlaws 15U","Mac Bulldogs 15U","Fostoria Jr. Legion"]
+  "16U": ["Mojo 15U","Buckeye Elite 15U - Boyce","Pickaway Outlaws 15U","Mac Bulldogs 15U","Fostoria Jr. Legion"],
+  "Softball 10U": ["Seneca Sluggers","Blackhawks","Lady Liberty","JABC Riot"],
+  "Softball 12U": ["Thunder 12U - Garvin","Magic 11U - Reed","Lady Dynamite 12U","Thunder 12U-Parker","Allen East 12U"]
 };
 const POOLS = {
   "14U": {
@@ -171,7 +179,7 @@ const POOLS = {
     "Young Pool": ["Motor City Mayhem 14U","Bedford Elite 14U","Midwest Monsters Baseball Club","Columbus Sharks"]
   }
 };
-const DIV_COLORS = {"9U":"#2563a8","10U":"#1a7a3c","11U":"#b45309","12U":"#9333a0","14U":"#c0392b","16U":"#0f766e"};
+const DIV_COLORS = {"9U":"#2563a8","10U":"#1a7a3c","11U":"#b45309","12U":"#9333a0","14U":"#c0392b","16U":"#0f766e","Softball 10U":"#be185d","Softball 12U":"#7c3aed"};
 const SCHEDULE = [
   {div:"9U",date:"Sat 5/30",time:"9:00 AM",site:"Dan Waters Field",team1:"Webb Gems",team2:"Tiffin Anchors 9U"},
   {div:"9U",date:"Sat 5/30",time:"11:00 AM",site:"Dan Waters Field",team1:"Webb Gems",team2:"Bellevue (The VUE) 9U"},
@@ -227,10 +235,29 @@ const SCHEDULE = [
   {div:"16U",date:"Sat 5/30",time:"5:00 PM",site:"Tornado Field",team1:"Mac Bulldogs 15U",team2:"Mojo 15U"},
   {div:"16U",date:"Sun 5/31",time:"9:00 AM",site:"Tornado Field",team1:"Mac Bulldogs 15U",team2:"Pickaway Outlaws 15U"},
   {div:"16U",date:"Sun 5/31",time:"11:00 AM",site:"Tornado Field",team1:"Pickaway Outlaws 15U",team2:"Fostoria Jr. Legion"},
-  {div:"16U",date:"Sun 5/31",time:"1:00 PM",site:"Tornado Field",team1:"Buckeye Elite 15U - Boyce",team2:"Mac Bulldogs 15U"}
+  {div:"16U",date:"Sun 5/31",time:"1:00 PM",site:"Tornado Field",team1:"Buckeye Elite 15U - Boyce",team2:"Mac Bulldogs 15U"},
+  {div:"Softball 12U",date:"Sat 5/30",time:"9:00 AM",site:"Ted Rombach Field",team1:"Thunder 12U - Garvin",team2:"Magic 11U - Reed"},
+  {div:"Softball 12U",date:"Sat 5/30",time:"11:00 AM",site:"Ted Rombach Field",team1:"Lady Dynamite 12U",team2:"Thunder 12U-Parker"},
+  {div:"Softball 12U",date:"Sat 5/30",time:"1:00 PM",site:"Ted Rombach Field",team1:"Allen East 12U",team2:"Thunder 12U - Garvin"},
+  {div:"Softball 12U",date:"Sat 5/30",time:"3:00 PM",site:"Ted Rombach Field",team1:"Magic 11U - Reed",team2:"Lady Dynamite 12U"},
+  {div:"Softball 12U",date:"Sat 5/30",time:"5:00 PM",site:"Ted Rombach Field",team1:"Allen East 12U",team2:"Thunder 12U-Parker"},
+  {div:"Softball 12U",date:"Sun 5/31",time:"9:00 AM",site:"Ted Rombach Field",team1:"Thunder 12U - Garvin",team2:"Lady Dynamite 12U"},
+  {div:"Softball 12U",date:"Sun 5/31",time:"11:00 AM",site:"Ted Rombach Field",team1:"Lady Dynamite 12U",team2:"Allen East 12U"},
+  {div:"Softball 12U",date:"Sun 5/31",time:"1:00 PM",site:"Ted Rombach Field",team1:"Thunder 12U - Garvin",team2:"Thunder 12U-Parker"},
+  {div:"Softball 12U",date:"Sun 5/31",time:"3:00 PM",site:"Ted Rombach Field",team1:"Allen East 12U",team2:"Magic 11U - Reed"},
+  {div:"Softball 12U",date:"Sun 5/31",time:"5:00 PM",site:"Ted Rombach Field",team1:"Magic 11U - Reed",team2:"Thunder 12U-Parker"},
+  {div:"Softball 10U",date:"Sat 5/30",time:"10:00 AM",site:"Leroy Coleman Field",team1:"Seneca Sluggers",team2:"Blackhawks"},
+  {div:"Softball 10U",date:"Sat 5/30",time:"12:00 PM",site:"Leroy Coleman Field",team1:"Lady Liberty",team2:"Seneca Sluggers"},
+  {div:"Softball 10U",date:"Sat 5/30",time:"2:00 PM",site:"Leroy Coleman Field",team1:"Blackhawks",team2:"JABC Riot"},
+  {div:"Softball 10U",date:"Sat 5/30",time:"4:00 PM",site:"Leroy Coleman Field",team1:"JABC Riot",team2:"Lady Liberty"},
+  {div:"Softball 10U",date:"Sun 5/31",time:"10:00 AM",site:"Leroy Coleman Field",team1:"Seneca Sluggers",team2:"JABC Riot"},
+  {div:"Softball 10U",date:"Sun 5/31",time:"12:00 PM",site:"Leroy Coleman Field",team1:"Lady Liberty",team2:"Blackhawks"},
+  {div:"Softball 10U",date:"Sun 5/31",time:"2:00 PM",site:"Leroy Coleman Field",team1:"4 Seed",team2:"3 Seed",note:"Consolation"},
+  {div:"Softball 10U",date:"Sun 5/31",time:"4:00 PM",site:"Leroy Coleman Field",team1:"1 Seed",team2:"2 Seed",note:"Championship"}
 ];
-let savedScores = {"0":{"score1":15,"score2":12},"1":{"score1":7,"score2":6},"2":{"score1":10,"score2":8},"3":{"score1":20,"score2":3},"4":{"score1":11,"score2":14},"5":{"score1":9,"score2":6},"8":{"score1":7,"score2":4},"9":{"score1":14,"score2":3},"10":{"score1":17,"score2":15},"11":{"score1":4,"score2":14},"12":{"score1":20,"score2":8},"13":{"score1":14,"score2":15},"16":{"score1":11,"score2":0},"17":{"score1":7,"score2":21},"18":{"score1":6,"score2":6},"19":{"score1":4,"score2":5},"20":{"score1":6,"score2":3},"21":{"score1":0,"score2":1},"24":{"score1":4,"score2":6},"25":{"score1":7,"score2":8},"26":{"score1":3,"score2":2},"27":{"score1":12,"score2":11},"28":{"score1":10,"score2":8},"29":{"score1":8,"score2":6},"32":{"score1":5,"score2":4},"33":{"score1":15,"score2":3},"34":{"score1":22,"score2":18},"35":{"score1":11,"score2":7},"36":{"score1":3,"score2":9},"37":{"score1":5,"score2":10},"39":{"score1":14,"score2":2},"40":{"score1":5,"score2":6},"41":{"score1":14,"score2":12},"42":{"score1":10,"score2":8},"43":{"score1":17,"score2":10},"44":{"score1":6,"score2":5},"47":{"score1":5,"score2":4},"48":{"score1":6,"score2":5},"49":{"score1":4,"score2":2},"50":{"score1":15,"score2":4},"51":{"score1":14,"score2":11},"52":{"score1":10,"score2":10},"53":{"score1":16,"score2":10},"54":{"score1":10,"score2":5}};
+let savedScores = {"0":{"score1":15,"score2":12},"1":{"score1":7,"score2":6},"2":{"score1":10,"score2":8},"3":{"score1":20,"score2":3},"4":{"score1":11,"score2":14},"5":{"score1":9,"score2":6},"8":{"score1":7,"score2":4},"9":{"score1":14,"score2":3},"10":{"score1":17,"score2":15},"11":{"score1":4,"score2":14},"12":{"score1":20,"score2":8},"13":{"score1":14,"score2":15},"16":{"score1":11,"score2":0},"17":{"score1":7,"score2":21},"18":{"score1":6,"score2":6},"19":{"score1":4,"score2":5},"20":{"score1":6,"score2":3},"21":{"score1":0,"score2":1},"24":{"score1":4,"score2":6},"25":{"score1":7,"score2":8},"26":{"score1":3,"score2":2},"27":{"score1":12,"score2":11},"28":{"score1":10,"score2":8},"29":{"score1":8,"score2":6},"32":{"score1":5,"score2":4},"33":{"score1":15,"score2":3},"34":{"score1":22,"score2":18},"35":{"score1":11,"score2":7},"36":{"score1":3,"score2":9},"37":{"score1":5,"score2":10},"39":{"score1":14,"score2":2},"40":{"score1":5,"score2":6},"41":{"score1":14,"score2":12},"42":{"score1":10,"score2":8},"43":{"score1":17,"score2":10},"44":{"score1":6,"score2":5},"47":{"score1":5,"score2":4},"48":{"score1":6,"score2":5},"49":{"score1":4,"score2":2},"50":{"score1":15,"score2":4},"51":{"score1":14,"score2":11},"52":{"score1":10,"score2":10},"53":{"score1":16,"score2":10},"54":{"score1":10,"score2":5},"55":{"score1":12,"score2":12},"56":{"score1":3,"score2":2},"57":{"score1":5,"score2":12},"58":{"score1":17,"score2":7},"59":{"score1":11,"score2":13},"60":{"score1":8,"score2":9},"61":{"score1":12,"score2":13},"62":{"score1":1,"score2":0},"63":{"score1":23,"score2":12},"64":{"score1":12,"score2":11},"65":{"score1":8,"score2":12},"66":{"score1":10,"score2":9},"67":{"score1":15,"score2":23},"68":{"score1":9,"score2":4},"69":{"score1":17,"score2":16},"70":{"score1":1,"score2":2}};
 let PUBLIC_MODE = true;
+let activeSport = "Baseball";
 let activeDivision = "9U";
 let currentTab = 'schedule';
 let filterDay = 'all';
@@ -244,6 +271,12 @@ function switchTab(tab, el) {
   ['schedule','standings','results','brackets','scoreboard'].forEach(t => document.getElementById('tab-'+t).style.display = t===tab?'':'none');
   render();
 }
+function setSport(sport) {
+  activeSport = sport;
+  activeDivision = SPORT_DIVISIONS[sport][0];
+  enteringId = null; filterDay = 'all'; searchQ = '';
+  render();
+}
 function setDivision(div) {
   activeDivision = div; enteringId = null; filterDay = 'all';
   document.querySelectorAll('.div-tab').forEach(t => {
@@ -255,8 +288,13 @@ function setDivision(div) {
   });
   render();
 }
+function renderSportTabs() {
+  document.getElementById('sportTabs').innerHTML = Object.keys(SPORT_DIVISIONS).map(s =>
+    `<button class="sport-tab${s===activeSport?' active':''}" onclick="setSport('${s}')">${s}</button>`
+  ).join('');
+}
 function renderDivTabs() {
-  document.getElementById('divTabs').innerHTML = Object.keys(DIVISIONS).map(d =>
+  document.getElementById('divTabs').innerHTML = SPORT_DIVISIONS[activeSport].map(d =>
     `<button class="div-tab${d===activeDivision?' active':''}" data-div="${d}" onclick="setDivision('${d}')" style="${d===activeDivision?'background:'+DIV_COLORS[d]+';border-color:'+DIV_COLORS[d]+';color:#fff':''}">${d}</button>`
   ).join('');
 }
@@ -452,8 +490,8 @@ function renderResultsMatrix() {
 }
 function shortTeam(t) { return t.replace('Bellevue (The VUE)','Bellevue').replace('Findlay Jr. Trojans','Findlay').replace('Crawford County Coyotes','Coyotes').replace('North Central Ohio','NCO').replace('Anthony Wayne Jr. Generals','AW Generals').replace('Midwest Monsters Baseball Club','Midwest Monsters').replace('OFBC - River Monsters','River Monsters').replace('Buckeye Elite 15U - Boyce','Buckeye Elite').replace('Pickaway Outlaws','Pickaway'); }
 function renderBrackets() {
-  if(activeDivision === '16U') {
-    return `<div class="empty-state"><div style="font-size:36px">🏆</div><p>16U placements are determined by pool-play standings only.</p></div>`;
+  if(activeDivision === '16U' || activeDivision === 'Softball 12U') {
+    return `<div class="empty-state"><div style="font-size:36px">🏆</div><p>${activeDivision} placements are determined by pool-play standings only.</p></div>`;
   }
   const bracketGames = SCHEDULE.map((g,i)=>({...g,idx:i})).filter(g => g.div === activeDivision && g.note);
   if(!bracketGames.length) return `<div class="empty-state"><div style="font-size:36px">🏆</div><p>No placement games listed for this division.</p></div>`;
@@ -478,13 +516,14 @@ function renderBrackets() {
   return html;
 }
 function renderScoreboard() {
-  return `<div class="scoreboard-grid">${Object.keys(DIVISIONS).map(div=>{
+  return `<div class="scoreboard-grid">${SPORT_DIVISIONS[activeSport].map(div=>{
     const s = computeStandings(div); const leader = s[0]; const hasGames = leader.w+leader.l+leader.t>0;
     const finishedGames = SCHEDULE.map((g,i)=>({...g,idx:i})).filter(g=>g.div===div&&savedScores[g.idx]);
     return `<div class="sb-division"><div class="sb-div-header" style="background:${DIV_COLORS[div]}"><span class="sb-div-title">${div} Division</span>${hasGames?`<span class="sb-div-leader">${leader.team} (${leader.w}-${leader.l})</span>`:''}</div><div class="sb-games">${finishedGames.length===0?`<div class="sb-empty">No final scores yet</div>`:finishedGames.map(g=>{ const sc=savedScores[g.idx]; const s1=+sc.score1,s2=+sc.score2; return `<div class="sb-game"><div class="sb-game-row"><span class="sb-team${s1>s2?' win-team':''}">${g.team1}</span><span class="sb-score" style="color:${s1>s2?'var(--green)':s1<s2?'var(--red)':'var(--muted)'}">${s1}</span></div><div class="sb-game-row"><span class="sb-team${s2>s1?' win-team':''}">${g.team2}</span><span class="sb-score" style="color:${s2>s1?'var(--green)':s2<s1?'var(--red)':'var(--muted)'}">${s2}</span></div><div class="sb-game-info">${g.site} · ${g.date} ${g.time}${g.pool?' · '+g.pool:''}</div></div>`; }).join('')}</div></div>`;
   }).join('')}</div>`;
 }
 function render() {
+  renderSportTabs();
   renderDivTabs();
   if(currentTab==='schedule') document.getElementById('tab-schedule').innerHTML = renderSchedule();
   if(currentTab==='standings') document.getElementById('tab-standings').innerHTML = renderStandings();
