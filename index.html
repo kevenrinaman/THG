@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Tournament Results</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>THG Tournament Results</title><style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --green: #1a7a3c; --green-light: #e8f5ee; --green-mid: #2d9e54;
@@ -10,7 +10,21 @@
     --text: #1a1a1a; --muted: #666; --border: #ddd;
     --shadow: 0 2px 8px rgba(0,0,0,0.08); --radius: 8px;
   }
-  body { font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  body { font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display:flex; flex-direction:column; }
+  .page-wrap { flex:1; }
+  footer {
+    margin-top: 24px;
+    padding: 14px 20px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    background: rgba(255,255,255,0.7);
+  }
+  footer strong {
+    color: var(--text);
+    letter-spacing: .4px;
+  }
   header {
     background: #111; color: #fff; padding: 0 24px;
     display: flex; align-items: center; justify-content: space-between;
@@ -127,7 +141,7 @@
     .team-name { max-width: 145px; }
     .game-time-col { text-align: left; min-width: 100%; display:flex; gap:8px; }
   }
-</style></head><body><header><h1>⚾ <span>Tournament</span> Results</h1><div class="header-actions"><button class="btn btn-ghost" onclick="window.print()">Print</button></div></header><div class="container"><div class="div-tabs" id="divTabs"></div><div class="main-nav"><button class="nav-tab active" onclick="switchTab('standings',this)">Standings</button><button class="nav-tab" onclick="switchTab('results',this)">Results Matrix</button><button class="nav-tab" onclick="switchTab('scoreboard',this)">Scoreboard</button></div><div id="tab-schedule" style="display:none"></div><div id="tab-standings"></div><div id="tab-results" style="display:none"></div><div id="tab-scoreboard" style="display:none"></div></div><script>
+</style></head><body><header><h1>⚾ <span>THG</span> Tournament Results</h1><div class="header-actions"><button class="btn btn-ghost" onclick="window.print()">Print</button></div></header><div class="container"><div class="div-tabs" id="divTabs"></div><div class="main-nav"><button class="nav-tab active" onclick="switchTab('schedule',this)">Schedule</button><button class="nav-tab" onclick="switchTab('standings',this)">Standings</button><button class="nav-tab" onclick="switchTab('results',this)">Results Matrix</button><button class="nav-tab" onclick="switchTab('brackets',this)">Brackets</button><button class="nav-tab" onclick="switchTab('scoreboard',this)">Scoreboard</button></div><div id="tab-schedule"></div><div id="tab-standings" style="display:none"></div><div id="tab-results" style="display:none"></div><div id="tab-brackets" style="display:none"></div><div id="tab-scoreboard" style="display:none"></div></div><script>
 const DIVISIONS = {
   "9U": ["Findlay 9U","Bellevue (The VUE) 9U","Tiffin Anchors 9U","Webb Gems"],
   "10U": ["Findlay Jr. Trojans 10U","Bellevue (The VUE) 10U","Seneca Sting 10U","Crawford County Coyotes 10U"],
@@ -200,9 +214,10 @@ const SCHEDULE = [
   {div:"16U",date:"Sun 5/31",time:"11:00 AM",site:"Tornado Field",team1:"Pickaway Outlaws 15U",team2:"Fostoria Jr. Legion"},
   {div:"16U",date:"Sun 5/31",time:"1:00 PM",site:"Tornado Field",team1:"Buckeye Elite 15U - Boyce",team2:"Mac Bulldogs 15U"}
 ];
-let savedScores = {"0":{"score1":15,"score2":12},"1":{"score1":7,"score2":6},"2":{"score1":10,"score2":8},"3":{"score1":20,"score2":3},"4":{"score1":11,"score2":14},"5":{"score1":9,"score2":6}};
+let savedScores = {"0":{"score1":15,"score2":12},"1":{"score1":7,"score2":6},"2":{"score1":10,"score2":8},"3":{"score1":20,"score2":3},"4":{"score1":11,"score2":14},"5":{"score1":9,"score2":6},"8":{"score1":7,"score2":4},"9":{"score1":14,"score2":3},"10":{"score1":17,"score2":15},"11":{"score1":4,"score2":14},"12":{"score1":20,"score2":8},"13":{"score1":14,"score2":15},"16":{"score1":11,"score2":0},"17":{"score1":7,"score2":21},"18":{"score1":6,"score2":6},"19":{"score1":4,"score2":5},"20":{"score1":6,"score2":3},"21":{"score1":0,"score2":1},"24":{"score1":4,"score2":6},"25":{"score1":7,"score2":8},"26":{"score1":3,"score2":2},"27":{"score1":12,"score2":11},"28":{"score1":10,"score2":8},"29":{"score1":8,"score2":6},"32":{"score1":5,"score2":4},"33":{"score1":15,"score2":3},"34":{"score1":22,"score2":18},"35":{"score1":11,"score2":7},"36":{"score1":3,"score2":9},"37":{"score1":5,"score2":10},"39":{"score1":14,"score2":2},"40":{"score1":5,"score2":6},"41":{"score1":14,"score2":12},"42":{"score1":10,"score2":8},"43":{"score1":17,"score2":10},"44":{"score1":6,"score2":5},"47":{"score1":5,"score2":4},"48":{"score1":6,"score2":5},"49":{"score1":4,"score2":2},"50":{"score1":15,"score2":4},"51":{"score1":14,"score2":11},"52":{"score1":10,"score2":10},"53":{"score1":16,"score2":10},"54":{"score1":10,"score2":5}};
+let PUBLIC_MODE = true;
 let activeDivision = "9U";
-let currentTab = 'standings';
+let currentTab = 'schedule';
 let filterDay = 'all';
 let searchQ = '';
 let enteringId = null;
@@ -211,7 +226,7 @@ function switchTab(tab, el) {
   currentTab = tab; enteringId = null;
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  ['schedule','standings','results','scoreboard'].forEach(t => document.getElementById('tab-'+t).style.display = t===tab?'':'none');
+  ['schedule','standings','results','brackets','scoreboard'].forEach(t => document.getElementById('tab-'+t).style.display = t===tab?'':'none');
   render();
 }
 function setDivision(div) {
@@ -382,7 +397,7 @@ function renderGameRow(g) {
     <div class="game-meta">${g.pool?`<span class="badge badge-loc">${g.pool}</span>`:''}${g.note?`<span class="badge ${isChamp?'badge-champ':'badge-sched'}">${g.note}</span>`:''}${isFinal?`<span class="badge badge-final">Final</span>`:`<span class="badge badge-sched">Scheduled</span>`}</div>
     <div class="game-actions">`;
   if(isEntering) html += `<button class="btn btn-primary btn-sm" onclick="saveInline(${g.idx})">Save</button><button class="btn btn-sm" onclick="cancelInline()">✕</button>`;
-  else if(realTeams) { html += `<button class="btn btn-sm" onclick="startInline(${g.idx})">${isFinal?'Edit':'Score'}</button>`; if(isFinal) html += `<button class="btn btn-sm btn-danger" onclick="clearScore(${g.idx})">✕</button>`; }
+  else if(realTeams && !PUBLIC_MODE) { html += `<button class="btn btn-sm" onclick="startInline(${g.idx})">${isFinal?'Edit':'Score'}</button>`; if(isFinal) html += `<button class="btn btn-sm btn-danger" onclick="clearScore(${g.idx})">✕</button>`; }
   html += `</div></div>`;
   return html;
 }
@@ -421,6 +436,29 @@ function renderResultsMatrix() {
   return html;
 }
 function shortTeam(t) { return t.replace('Bellevue (The VUE)','Bellevue').replace('Findlay Jr. Trojans','Findlay').replace('Crawford County Coyotes','Coyotes').replace('North Central Ohio','NCO').replace('Anthony Wayne Jr. Generals','AW Generals').replace('Midwest Monsters Baseball Club','Midwest Monsters').replace('OFBC - River Monsters','River Monsters').replace('Buckeye Elite 15U - Boyce','Buckeye Elite').replace('Pickaway Outlaws','Pickaway'); }
+function renderBrackets() {
+  const bracketGames = SCHEDULE.map((g,i)=>({...g,idx:i})).filter(g => g.div === activeDivision && g.note);
+  if(!bracketGames.length) return `<div class="empty-state"><div style="font-size:36px">🏆</div><p>No bracket games listed for this division.</p></div>`;
+  let html = `<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Seed names appear automatically after pool play is complete.</p><div class="game-list">`;
+  bracketGames.forEach(g => {
+    const sc = savedScores[g.idx];
+    const s1gt = sc && +sc.score1 > +sc.score2;
+    const s2gt = sc && +sc.score2 > +sc.score1;
+    html += `<div class="game-row${sc?' is-final':''}${g.note==='Championship'?' is-champ':''}">
+      <div class="game-time-col"><div class="game-time">${g.time}</div><div class="game-date">${g.date}</div></div>
+      <div class="game-teams">
+        <span class="team-name" title="${getDisplayTeam(g.div, g.team1)}" style="${sc&&s1gt?'font-weight:800':''}">${getDisplayTeam(g.div, g.team1)}</span>`;
+    if(sc) html += `<span class="score ${s1gt?'win':s2gt?'loss':'tie'}">${sc.score1}</span><span class="vs-sep">–</span><span class="score ${s2gt?'win':s1gt?'loss':'tie'}">${sc.score2}</span>`;
+    else html += `<span class="vs-sep" style="margin:0 6px">vs</span>`;
+    html += `<span class="team-name" title="${getDisplayTeam(g.div, g.team2)}" style="${sc&&s2gt?'font-weight:800':''}">${getDisplayTeam(g.div, g.team2)}</span>
+      </div>
+      <div class="game-meta"><span class="badge ${g.note==='Championship'?'badge-champ':'badge-sched'}">${g.note}</span><span class="badge badge-loc">${g.site}</span>${sc?`<span class="badge badge-final">Final</span>`:`<span class="badge badge-sched">Scheduled</span>`}</div>
+      <div class="game-actions">${isPlayableGame(g) && !PUBLIC_MODE ? `<button class="btn btn-sm" onclick="startInline(${g.idx})">${sc?'Edit':'Score'}</button>` : ``}</div>
+    </div>`;
+  });
+  html += `</div>`;
+  return html;
+}
 function renderScoreboard() {
   return `<div class="scoreboard-grid">${Object.keys(DIVISIONS).map(div=>{
     const s = computeStandings(div); const leader = s[0]; const hasGames = leader.w+leader.l+leader.t>0;
@@ -433,25 +471,40 @@ function render() {
   if(currentTab==='schedule') document.getElementById('tab-schedule').innerHTML = renderSchedule();
   if(currentTab==='standings') document.getElementById('tab-standings').innerHTML = renderStandings();
   if(currentTab==='results') document.getElementById('tab-results').innerHTML = renderResultsMatrix();
+  if(currentTab==='brackets') document.getElementById('tab-brackets').innerHTML = renderBrackets();
   if(currentTab==='scoreboard') document.getElementById('tab-scoreboard').innerHTML = renderScoreboard();
 }
+function getBackupFileName() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  return 'tournament_backup_' + d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '_' + pad(d.getHours()) + '-' + pad(d.getMinutes()) + '.json';
+}
 function exportJSON() {
-  const blob=new Blob([JSON.stringify({savedScores},null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='tournament_scores.json'; a.click();
+  const backup = {
+    app: 'Tournament Manager',
+    exportedAt: new Date().toISOString(),
+    savedScores: savedScores
+  };
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=getBackupFileName(); a.click();
 }
 function importJSON() {
   const input=document.createElement('input'); input.type='file'; input.accept='application/json,.json';
-  input.onchange=e=>{ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); savedScores=data.savedScores||data||{}; save(); render(); alert('Scores imported.'); } catch(err){ alert('Could not import file.'); } }; reader.readAsText(file); };
+  input.onchange=e=>{ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); savedScores=data.savedScores||data||{}; save(); render(); alert('Backup restored.'); } catch(err){ alert('Could not restore backup file.'); } }; reader.readAsText(file); };
   input.click();
+}
+function quickBackupReminder() {
+  const completed = Object.keys(savedScores).length;
+  if(completed > 0 && completed % 5 === 0) console.log('Backup reminder: click Backup to save a copy of your results file.');
 }
 function generateShareHTML() {
   const styles = document.querySelector('style').innerHTML;
   const currentScores = JSON.stringify(savedScores);
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Tournament Results</title><style>${styles}</style></head><body><header><h1>⚾ <span>Tournament</span> Results</h1><div class="header-actions"><button class="btn btn-ghost" onclick="window.print()">Print</button></div></header><div class="container"><div class="div-tabs" id="divTabs"></div><div class="main-nav"><button class="nav-tab active" onclick="switchTab('standings',this)">Standings</button><button class="nav-tab" onclick="switchTab('results',this)">Results Matrix</button><button class="nav-tab" onclick="switchTab('scoreboard',this)">Scoreboard</button></div><div id="tab-schedule" style="display:none"></div><div id="tab-standings"></div><div id="tab-results" style="display:none"></div><div id="tab-scoreboard" style="display:none"></div></div><script>${document.querySelector('script').innerHTML.replace("let savedScores = JSON.parse(localStorage.getItem('t_scores') || '{}');", "let savedScores = " + currentScores + ";").replace("let currentTab = 'schedule';", "let currentTab = 'standings';")}<\/script></body></html>`;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>THG Tournament Results</title><style>${styles}</style></head><body><header><h1>⚾ <span>THG</span> Tournament Results</h1><div class="header-actions"><button class="btn btn-ghost" onclick="window.print()">Print</button></div></header><div class="container"><div class="div-tabs" id="divTabs"></div><div class="main-nav"><button class="nav-tab active" onclick="switchTab('schedule',this)">Schedule</button><button class="nav-tab" onclick="switchTab('standings',this)">Standings</button><button class="nav-tab" onclick="switchTab('results',this)">Results Matrix</button><button class="nav-tab" onclick="switchTab('brackets',this)">Brackets</button><button class="nav-tab" onclick="switchTab('scoreboard',this)">Scoreboard</button></div><div id="tab-schedule"></div><div id="tab-standings" style="display:none"></div><div id="tab-results" style="display:none"></div><div id="tab-brackets" style="display:none"></div><div id="tab-scoreboard" style="display:none"></div></div><script>${document.querySelector('script').innerHTML.replace("let savedScores = JSON.parse(localStorage.getItem('t_scores') || '{}');", "let savedScores = " + currentScores + ";").replace("let PUBLIC_MODE = false;", "let PUBLIC_MODE = true;").replace("let currentTab = 'schedule';", "let currentTab = 'schedule';")}<\/script></body></html>`;
 }
 function downloadShareHTML() {
   const blob=new Blob([generateShareHTML()],{type:'text/html'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='tournament_results.html'; a.click();
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='index.html'; a.click();
 }
 render();
 </script></body></html>
