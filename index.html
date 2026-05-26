@@ -133,15 +133,30 @@
   .sb-empty { font-size: 13px; color: var(--muted); padding: 12px 10px; }
   .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
   @media (max-width: 650px) {
-    header { padding: 0 12px; }
-    header h1 { font-size: 16px; }
-    .header-actions { gap: 4px; }
+    header { padding: 0 10px; flex-wrap: wrap; height: auto; min-height: 60px; gap: 6px; }
+    header h1 { font-size: 15px; line-height: 1.15; padding: 8px 0; }
+    .header-actions { gap: 4px; flex-wrap: wrap; }
     .btn-ghost { padding: 6px 8px; }
-    .game-row { flex-wrap: wrap; }
-    .team-name { max-width: 145px; }
+    .container { padding: 14px 8px; max-width: 100%; overflow-x: hidden; }
+    .main-nav { flex-wrap: wrap; overflow-x: visible; }
+    .nav-tab { font-size: 12px; padding: 8px 10px; flex: 1 1 auto; text-align: center; }
+    .div-tabs { gap: 5px; }
+    .div-tab { font-size: 12px; padding: 5px 11px; }
+    .game-row { flex-wrap: wrap; padding: 10px; }
+    .team-name { max-width: 145px; white-space: normal; }
     .game-time-col { text-align: left; min-width: 100%; display:flex; gap:8px; }
+    .game-meta { width: 100%; }
+    .game-actions { width: 100%; }
+    .standings-table { font-size: 12px; }
+    .standings-table th, .standings-table td { padding: 7px 5px; }
+    .matrix-wrap { overflow-x: visible; box-shadow: none; }
+    .matrix-table { min-width: 0; font-size: 11px; table-layout: fixed; }
+    .matrix-table th, .matrix-table td { padding: 6px 3px; word-break: break-word; }
+    .matrix-table th:first-child, .matrix-table td:first-child { position: static; width: 30%; }
+    .scoreboard-grid { grid-template-columns: 1fr; }
+    footer { font-size: 11px; padding: 12px 8px; }
   }
-</style></head><body><header><h1>⚾ <span>THG</span> Tournament Results</h1><div class="header-actions"><button class="btn btn-ghost" onclick="window.print()">Print</button></div></header><div class="container"><div class="div-tabs" id="divTabs"></div><div class="main-nav"><button class="nav-tab active" onclick="switchTab('schedule',this)">Schedule</button><button class="nav-tab" onclick="switchTab('standings',this)">Standings</button><button class="nav-tab" onclick="switchTab('results',this)">Results Matrix</button><button class="nav-tab" onclick="switchTab('brackets',this)">Brackets</button><button class="nav-tab" onclick="switchTab('scoreboard',this)">Scoreboard</button></div><div id="tab-schedule"></div><div id="tab-standings" style="display:none"></div><div id="tab-results" style="display:none"></div><div id="tab-brackets" style="display:none"></div><div id="tab-scoreboard" style="display:none"></div></div><script>
+</style></head><body><header><h1>⚾ <span>THG</span> Tournament Results</h1><div class="header-actions"><button class="btn btn-ghost" onclick="window.print()">Print</button></div></header><div class="page-wrap"><div class="container"><div class="div-tabs" id="divTabs"></div><div class="main-nav"><button class="nav-tab active" onclick="switchTab('schedule',this)">Schedule</button><button class="nav-tab" onclick="switchTab('standings',this)">Standings</button><button class="nav-tab" onclick="switchTab('results',this)">Results Matrix</button><button class="nav-tab" onclick="switchTab('brackets',this)">Placement Games</button><button class="nav-tab" onclick="switchTab('scoreboard',this)">Scoreboard</button></div><div id="tab-schedule"></div><div id="tab-standings" style="display:none"></div><div id="tab-results" style="display:none"></div><div id="tab-brackets" style="display:none"></div><div id="tab-scoreboard" style="display:none"></div></div></div><footer>Powered by <strong>3DU, LLC</strong></footer><script>
 const DIVISIONS = {
   "9U": ["Findlay 9U","Bellevue (The VUE) 9U","Tiffin Anchors 9U","Webb Gems"],
   "10U": ["Findlay Jr. Trojans 10U","Bellevue (The VUE) 10U","Seneca Sting 10U","Crawford County Coyotes 10U"],
@@ -196,15 +211,15 @@ const SCHEDULE = [
   {div:"14U",date:"Sat 5/30",time:"2:00 PM",site:"Charles Dedrick Field",team1:"Anthony Wayne Jr. Generals 14U",team2:"OFBC - River Monsters 14U",pool:"Dedrick Pool"},
   {div:"14U",date:"Sun 5/31",time:"9:00 AM",site:"Charles Dedrick Field",team1:"North Central Ohio Aces",team2:"OFBC - River Monsters 14U",pool:"Dedrick Pool"},
   {div:"14U",date:"Sun 5/31",time:"11:00 AM",site:"Charles Dedrick Field",team1:"Anthony Wayne Jr. Generals 14U",team2:"Fremont Baseball Club",pool:"Dedrick Pool"},
-  {div:"14U",date:"Sun 5/31",time:"3:00 PM",site:"Charles Dedrick Field",team1:"Dedrick #3",team2:"Young #3",note:"Semifinal"},
+  {div:"14U",date:"Sun 5/31",time:"3:00 PM",site:"Charles Dedrick Field",team1:"Dedrick #3",team2:"Young #3",note:"Consolation"},
   {div:"14U",date:"Sat 5/30",time:"8:00 AM",site:"Roger Young Field",team1:"Motor City Mayhem 14U",team2:"Columbus Sharks",pool:"Young Pool"},
   {div:"14U",date:"Sat 5/30",time:"10:00 AM",site:"Roger Young Field",team1:"Midwest Monsters Baseball Club",team2:"Bedford Elite 14U",pool:"Young Pool"},
   {div:"14U",date:"Sat 5/30",time:"12:00 PM",site:"Roger Young Field",team1:"Bedford Elite 14U",team2:"Motor City Mayhem 14U",pool:"Young Pool"},
   {div:"14U",date:"Sat 5/30",time:"2:00 PM",site:"Roger Young Field",team1:"Columbus Sharks",team2:"Midwest Monsters Baseball Club",pool:"Young Pool"},
   {div:"14U",date:"Sun 5/31",time:"9:00 AM",site:"Roger Young Field",team1:"Motor City Mayhem 14U",team2:"Midwest Monsters Baseball Club",pool:"Young Pool"},
   {div:"14U",date:"Sun 5/31",time:"11:00 AM",site:"Roger Young Field",team1:"Columbus Sharks",team2:"Bedford Elite 14U",pool:"Young Pool"},
-  {div:"14U",date:"Sun 5/31",time:"3:00 PM",site:"Roger Young Field",team1:"Young #2",team2:"Dedrick #2",note:"Semifinal"},
-  {div:"14U",date:"Sun 5/31",time:"5:00 PM",site:"Roger Young Field",team1:"14U Champ 1",team2:"14U Champ 2",note:"Championship"},
+  {div:"14U",date:"Sun 5/31",time:"3:00 PM",site:"Roger Young Field",team1:"Young #2",team2:"Dedrick #2",note:"Consolation"},
+  {div:"14U",date:"Sun 5/31",time:"5:00 PM",site:"Roger Young Field",team1:"Dedrick #1",team2:"Young #1",note:"Championship"},
   {div:"16U",date:"Sat 5/30",time:"9:00 AM",site:"Tornado Field",team1:"Pickaway Outlaws 15U",team2:"Buckeye Elite 15U - Boyce"},
   {div:"16U",date:"Sat 5/30",time:"11:00 AM",site:"Tornado Field",team1:"Buckeye Elite 15U - Boyce",team2:"Fostoria Jr. Legion"},
   {div:"16U",date:"Sat 5/30",time:"1:00 PM",site:"Tornado Field",team1:"Pickaway Outlaws 15U",team2:"Mojo 15U"},
@@ -437,9 +452,12 @@ function renderResultsMatrix() {
 }
 function shortTeam(t) { return t.replace('Bellevue (The VUE)','Bellevue').replace('Findlay Jr. Trojans','Findlay').replace('Crawford County Coyotes','Coyotes').replace('North Central Ohio','NCO').replace('Anthony Wayne Jr. Generals','AW Generals').replace('Midwest Monsters Baseball Club','Midwest Monsters').replace('OFBC - River Monsters','River Monsters').replace('Buckeye Elite 15U - Boyce','Buckeye Elite').replace('Pickaway Outlaws','Pickaway'); }
 function renderBrackets() {
+  if(activeDivision === '16U') {
+    return `<div class="empty-state"><div style="font-size:36px">🏆</div><p>16U placements are determined by pool-play standings only.</p></div>`;
+  }
   const bracketGames = SCHEDULE.map((g,i)=>({...g,idx:i})).filter(g => g.div === activeDivision && g.note);
-  if(!bracketGames.length) return `<div class="empty-state"><div style="font-size:36px">🏆</div><p>No bracket games listed for this division.</p></div>`;
-  let html = `<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Seed names appear automatically after pool play is complete.</p><div class="game-list">`;
+  if(!bracketGames.length) return `<div class="empty-state"><div style="font-size:36px">🏆</div><p>No placement games listed for this division.</p></div>`;
+  let html = `<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Seed names appear automatically after pool play is complete. Placement games are based on pool-play finish.</p><div class="game-list">`;
   bracketGames.forEach(g => {
     const sc = savedScores[g.idx];
     const s1gt = sc && +sc.score1 > +sc.score2;
@@ -500,7 +518,7 @@ function quickBackupReminder() {
 function generateShareHTML() {
   const styles = document.querySelector('style').innerHTML;
   const currentScores = JSON.stringify(savedScores);
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>THG Tournament Results</title><style>${styles}</style></head><body><header><h1>⚾ <span>THG</span> Tournament Results</h1><div class="header-actions"><button class="btn btn-ghost" onclick="window.print()">Print</button></div></header><div class="container"><div class="div-tabs" id="divTabs"></div><div class="main-nav"><button class="nav-tab active" onclick="switchTab('schedule',this)">Schedule</button><button class="nav-tab" onclick="switchTab('standings',this)">Standings</button><button class="nav-tab" onclick="switchTab('results',this)">Results Matrix</button><button class="nav-tab" onclick="switchTab('brackets',this)">Brackets</button><button class="nav-tab" onclick="switchTab('scoreboard',this)">Scoreboard</button></div><div id="tab-schedule"></div><div id="tab-standings" style="display:none"></div><div id="tab-results" style="display:none"></div><div id="tab-brackets" style="display:none"></div><div id="tab-scoreboard" style="display:none"></div></div><script>${document.querySelector('script').innerHTML.replace("let savedScores = JSON.parse(localStorage.getItem('t_scores') || '{}');", "let savedScores = " + currentScores + ";").replace("let PUBLIC_MODE = false;", "let PUBLIC_MODE = true;").replace("let currentTab = 'schedule';", "let currentTab = 'schedule';")}<\/script></body></html>`;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>THG Tournament Results</title><style>${styles}</style></head><body><header><h1>⚾ <span>THG</span> Tournament Results</h1><div class="header-actions"><button class="btn btn-ghost" onclick="window.print()">Print</button></div></header><div class="page-wrap"><div class="container"><div class="div-tabs" id="divTabs"></div><div class="main-nav"><button class="nav-tab active" onclick="switchTab('schedule',this)">Schedule</button><button class="nav-tab" onclick="switchTab('standings',this)">Standings</button><button class="nav-tab" onclick="switchTab('results',this)">Results Matrix</button><button class="nav-tab" onclick="switchTab('brackets',this)">Placement Games</button><button class="nav-tab" onclick="switchTab('scoreboard',this)">Scoreboard</button></div><div id="tab-schedule"></div><div id="tab-standings" style="display:none"></div><div id="tab-results" style="display:none"></div><div id="tab-brackets" style="display:none"></div><div id="tab-scoreboard" style="display:none"></div></div></div><footer>Powered by <strong>3DU, LLC</strong></footer><script>${document.querySelector('script').innerHTML.replace("let savedScores = JSON.parse(localStorage.getItem('t_scores') || '{}');", "let savedScores = " + currentScores + ";").replace("let PUBLIC_MODE = false;", "let PUBLIC_MODE = true;").replace("let currentTab = 'schedule';", "let currentTab = 'schedule';")}<\/script></body></html>`;
 }
 function downloadShareHTML() {
   const blob=new Blob([generateShareHTML()],{type:'text/html'});
